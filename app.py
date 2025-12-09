@@ -347,7 +347,7 @@ def _ShootTimer(Active_Sprite: trtl.Turtle):
         Hit_Score += 1
         return
     Draw_Missile(Active_Sprite.xcor() + 5, Active_Sprite.ycor() + 0.01, Active_Sprite)
-    SpaceShip_Char.ontimer(lambda: _ShootTimer(Active_Sprite), 40)
+    SpaceShip_Char_Screen.ontimer(lambda: _ShootTimer(Active_Sprite), 40)
     
   else:
     Reset_Sprite(Active_Sprite)
