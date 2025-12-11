@@ -1,8 +1,4 @@
 import turtle as trtl
-import tkinter as tk  
-import math           
-import time           
-import threading      
 import os
 import datetime as dt
 import glob
@@ -459,7 +455,6 @@ SpaceShip_Char_Screen.onkeypress(lambda: Sprite_SetDirection_LEFT(SpaceShip_Char
 SpaceShip_Char_Screen.onkeypress(lambda: Sprite_SetDirection_RIGHT(SpaceShip_Char), "Right")
 SpaceShip_Char_Screen.onkeypress(lambda: shoot_Missile(), 'space')
 SpaceShip_Char_Screen.onkeypress(Start_SpaceInvaders, 'p')
-SpaceShip_Char_Screen.onscreenclick(lambda f,c: print(f,c))
 
 SpaceShip_Char_Screen.listen()
 SpaceShip_Char_Screen.mainloop()
