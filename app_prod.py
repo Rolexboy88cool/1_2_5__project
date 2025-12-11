@@ -1,5 +1,8 @@
-import turtle as trtl 
+import turtle as trtl
 import tkinter as tk  
+import math           
+import time           
+import threading      
 import os
 import datetime as dt
 import glob
@@ -23,7 +26,7 @@ Sprite_AllSpritesPath        = os.path.join('Sprites', 'Invaders')
 Sprite_Invaders_list         = get_gif_files(Sprite_AllSpritesPath)
 Invaders_List                = []
 
-pygame.mixer.init()
+pygame.mixer.init() 
 
 Level_StartSFX  = pygame.mixer.Sound(os.path.join('Sounds', 'level-start-sfx.wav'))
 Enemy_MoveSFX   = pygame.mixer.Sound(os.path.join('Sounds', 'alien-move-sfx.wav'))
@@ -38,18 +41,16 @@ for file_path in Sprite_Invaders_list:
     if (file_path.find("E_") != -1):
       Invaders_List.append(file_path)
 
-Sprite_ProjectilePath        = os.path.join('Sprites', 'Projectiles')
-Sprite_Projectile_list       = get_gif_files(Sprite_ProjectilePath)
-
-Program_CreationDate         = dt.datetime(2025, 12, 4)
-Top_Height                   = 230
-Screen_Width                 = 300
-Screen_Height                = 100
-
+Sprite_ProjectilePath                  = os.path.join('Sprites', 'Projectiles')
+Sprite_Projectile_list                 = get_gif_files(Sprite_ProjectilePath)
+Program_CreationDate                   = dt.datetime(2025, 12, 4)
+Top_Height                             = 230
+Screen_Width                           = 300
+Screen_Height                          = 100
 Shoot_Cooldown                         = False
 Current_Enemies: list[EnemyData_Types] = []
 Hit_Score                              = 0
-Start_Time                             = 120
+Start_Time                             = 120 
 Gun_Ammo                               = 55
 Game_OverB                             = False
 Title_Colors                           = [
@@ -106,7 +107,6 @@ for file_path in Sprite_Invaders_list:
     SpaceShip_Char_Screen.addshape(file_path)
     
 SpaceShip_Char_Screen.tracer(False)
-
 
 def Create_MissileTurtle():
   Missile_Char = trtl.Turtle()
@@ -174,6 +174,11 @@ def Update_Enemies(Move_X: int = 1, Move_Y: int = 0):
 
   UnDown_Enmies = []
   Reached_Side  = False
+  if (len(Current_Enemies) <= 0):
+    Game_OverB = True
+    Game_Over("Game over! You killed all the ennemies!!")
+    return
+  
   for Invaders_Data in Current_Enemies:
     x, y, Enemy = Invaders_Data["x"], Invaders_Data["y"], Invaders_Data["sprite"]
     Enemy.clear()
@@ -246,11 +251,13 @@ def Check_Date(String, Default):
   return Failed
 
 def Sprite_SetDirection_LEFT(Sprite: trtl.Turtle):
+  if (Sprite.xcor() <= -225): return
   Sprite.setheading(0)
   Sprite.goto(Sprite.xcor() - 5, Sprite.ycor())
   SpaceShip_Char_Screen.update()
 
 def Sprite_SetDirection_RIGHT(Sprite: trtl.Turtle):
+  if (Sprite.xcor() >= 225): return
   Sprite.goto(Sprite.xcor() + 5, Sprite.ycor())
   SpaceShip_Char_Screen.update()
 
@@ -291,7 +298,6 @@ def Death_SpaceShip(Active_Sprite: trtl.Turtle):
 def _ShootTimer(Active_Sprite: trtl.Turtle):
   global Shoot_Cooldown, Hit_Score
   if (Active_Sprite.ycor() < Top_Height):
-
     for Invaders_Data in Current_Enemies:
       x, y, Enemy = Invaders_Data["x"], Invaders_Data["y"], Invaders_Data["sprite"]
       if (Is_Colliding(Active_Sprite, Enemy)):
@@ -335,7 +341,7 @@ def Game_Over(CustomText = None):
  if (Game_OverB == False):
    return
  Title_Shower.clear()
- if (Show):
+ if (Show): 
   Title_Shower.goto(-225, 180)
   Title_Shower.color('red')
   Title_Shower.write(CustomText or "Game over! Times up!", font=Title_font_setup)
@@ -345,14 +351,16 @@ def Game_Over(CustomText = None):
 
 def _CountDown(StartTime):
   global Game_OverB
-  if (Game_OverB):
-    Game_Over()
-    Death_SpaceShip(SpaceShip_Char)
-    Game_OverSFX.play()
-    return
+
   if (Gun_Ammo <= 0):
     Game_OverB = True
     Game_Over("Game over! You ran out of missiles") 
+    Death_SpaceShip(SpaceShip_Char)
+    Game_OverSFX.play()
+    return
+  
+  if (Game_OverB):
+    Game_Over()
     Death_SpaceShip(SpaceShip_Char)
     Game_OverSFX.play()
     return
@@ -399,10 +407,9 @@ def Draw_Missile(StartX, StartY, Active_Sprite: trtl.Turtle):
   Active_Sprite.penup()
   Active_Sprite.setheading(-180)
   Active_Sprite.forward(10.3)
-
   Active_Sprite.stamp()
 
-  Active_Sprite.forward(-5.5)
+  Active_Sprite.forward(-5.5) 
 
   Active_Sprite.setheading(90)
   Active_Sprite.forward(5.5)
@@ -419,8 +426,8 @@ def Draw_Missile(StartX, StartY, Active_Sprite: trtl.Turtle):
       Active_Sprite.stamp() 
       Active_Sprite.forward(-5)
 
-      Active_Sprite.forward(-5)
-      Active_Sprite.stamp()
+      Active_Sprite.forward(-5) 
+      Active_Sprite.stamp() 
       Active_Sprite.forward(5)
     elif (i== 4):
       Active_Sprite.color('red')
@@ -447,12 +454,12 @@ for Question in Intro_Questions:
     elif (Question.find("name") != -1):
       print(f"ok hello there {Result}")
 
+
 SpaceShip_Char_Screen.onkeypress(lambda: Sprite_SetDirection_LEFT(SpaceShip_Char), "Left")
 SpaceShip_Char_Screen.onkeypress(lambda: Sprite_SetDirection_RIGHT(SpaceShip_Char), "Right")
 SpaceShip_Char_Screen.onkeypress(lambda: shoot_Missile(), 'space')
 SpaceShip_Char_Screen.onkeypress(Start_SpaceInvaders, 'p')
 SpaceShip_Char_Screen.onscreenclick(lambda f,c: print(f,c))
-
 
 SpaceShip_Char_Screen.listen()
 SpaceShip_Char_Screen.mainloop()
